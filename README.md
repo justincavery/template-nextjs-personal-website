@@ -80,7 +80,7 @@ npx vercel env pull
 npm install && npm run dev
 ```
 
-When you run this development server, the changes you make in your frontend and studio configuration will be applied live using hot reloading.
+When you run this development server, the changes you make in your frontend and studio configuration will be applied live using hot reloading..
 
 Your personal website should be up and running on [http://localhost:3000][localhost-3000]! You can create and edit content on [http://localhost:3000/studio][localhost-3000-studio].
 
