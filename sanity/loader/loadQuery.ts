@@ -1,5 +1,6 @@
 import 'server-only'
 
+import * as queryStore from '@sanity/react-loader'
 import { draftMode } from 'next/headers'
 
 import { client } from '@/sanity/lib/client'
@@ -17,14 +18,10 @@ import {
   SettingsPayload,
 } from '@/types'
 
-import { queryStore } from './createQueryStore'
-
 const serverClient = client.withConfig({
   token,
-  stega: {
-    // Enable stega if it's a Vercel preview deployment, as the Vercel Toolbar has controls that shows overlays
-    enabled: process.env.VERCEL_ENV === 'preview',
-  },
+  // Enable stega if it's a Vercel preview deployment, as the Vercel Toolbar has controls that shows overlays
+  stega: process.env.VERCEL_ENV === 'preview',
 })
 
 /**
@@ -42,17 +39,22 @@ export const loadQuery = ((query, params = {}, options = {}) => {
     perspective = draftMode().isEnabled ? 'previewDrafts' : 'published',
   } = options
   // Don't cache by default
-  let cache: RequestCache = 'no-store'
+  let revalidate: NextFetchRequestConfig['revalidate'] = 0
   // If `next.tags` is set, and we're not using the CDN, then it's safe to cache
   if (!usingCdn && Array.isArray(options.next?.tags)) {
-    cache = 'force-cache'
+    revalidate = false
+  } else if (usingCdn) {
+    revalidate = 60
   }
   return queryStore.loadQuery(query, params, {
-    cache,
     ...options,
+    next: {
+      revalidate,
+      ...(options.next || {}),
+    },
     perspective,
-    // @TODO add support in `@sanity/client/stega` for the below
-    // stega: {enabled: draftMode().isEnabled}
+    // Enable stega if in Draft Mode, to enable overlays when outside Sanity Studio
+    stega: draftMode().isEnabled,
   })
 }) satisfies typeof queryStore.loadQuery
 

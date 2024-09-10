@@ -1,4 +1,4 @@
-import type { EncodeDataAttributeCallback } from '@sanity/react-loader/rsc'
+import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import Link from 'next/link'
 
 import { ProjectListItem } from '@/components/pages/home/ProjectListItem'
@@ -23,7 +23,7 @@ export function HomePage({ data, encodeDataAttribute }: HomePageProps) {
       {showcaseProjects && showcaseProjects.length > 0 && (
         <div className="mx-auto max-w-[100rem] rounded-md border">
           {showcaseProjects.map((project, key) => {
-            const href = resolveHref(project._type, project.slug)
+            const href = resolveHref(project?._type, project?.slug)
             if (!href) {
               return null
             }
